@@ -7,7 +7,7 @@ import {
   throwError,
   from,
 } from "rxjs";
-import { ajax } from "rxjs/ajax";
+import { ajax, AjaxError } from "rxjs/ajax";
 
 import { Message, MessageInterface } from "./Message";
 
@@ -23,26 +23,25 @@ interface ServerResponse {
 function app() {
   const fetchUnreadMessages$ = interval(3000).pipe(
     switchMap(() =>
-      ajax
-        .getJSON<ServerResponse>(
-          "https://ahj-rxjs-pooling-server-liaksej.vercel.app/messages/unread",
-        )
-        .pipe(
-          map((response) => {
-            return response.messages;
-          }),
-          catchError((err) => {
-            if (err.status === 404 || err.status === 500) {
-              console.log("Error", err);
-              return EMPTY;
-            } else {
-              return throwError(() => new Error(err));
-            }
-          }),
-          switchMap((messages) => {
-            return from(messages);
-          }),
-        ),
+      ajax(
+        "https://ahj-rxjs-pooling-server-liaksej.vercel.app/messages/unread",
+      ).pipe(
+        catchError((err: AjaxError) => {
+          if (err.status === 404 || err.status === 500) {
+            console.log("Error", err);
+            return EMPTY;
+          } else {
+            return throwError(() => err.status);
+          }
+        }),
+        map((response) => {
+          const res = response.response as ServerResponse;
+          return res.messages;
+        }),
+        switchMap((messages) => {
+          return from(messages);
+        }),
+      ),
     ),
   );
 
