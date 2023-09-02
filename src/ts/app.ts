@@ -1,11 +1,11 @@
 import {
   catchError,
-  interval,
   EMPTY,
+  from,
+  interval,
   map,
   switchMap,
   throwError,
-  from,
 } from "rxjs";
 import { ajax, AjaxError } from "rxjs/ajax";
 
@@ -23,23 +23,26 @@ interface ServerResponse {
 function app() {
   const fetchUnreadMessages$ = interval(3000).pipe(
     switchMap(() =>
-      ajax("https://ahj-rxjs-pooling-server-liaksej.vercel.app/messages/").pipe(
-        catchError((err: AjaxError) => {
-          if (err.status !== 200) {
-            console.log("Error", err);
-            return EMPTY;
-          } else {
-            return throwError(() => err.name);
-          }
-        }),
-        map((response) => {
-          const res = response.response as ServerResponse;
-          return res.messages;
-        }),
-        switchMap((messages) => {
-          return from(messages);
-        }),
-      ),
+      ajax
+        .getJSON<ServerResponse>(
+          "https://ahj-rxjs-pooling-server-liaksej.vercel.app/messages/",
+        )
+        .pipe(
+          catchError((err: AjaxError) => {
+            if (err.status !== 200) {
+              console.log("Error", err);
+              return EMPTY;
+            } else {
+              return throwError(() => err.name);
+            }
+          }),
+          map((response) => {
+            return response.messages;
+          }),
+          switchMap((messages) => {
+            return from(messages);
+          }),
+        ),
     ),
   );
 
