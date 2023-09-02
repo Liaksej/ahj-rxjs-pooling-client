@@ -1,9 +1,9 @@
 import {
   catchError,
   EMPTY,
-  from,
   interval,
   map,
+  mergeAll,
   switchMap,
   throwError,
 } from "rxjs";
@@ -25,7 +25,7 @@ function app() {
     switchMap(() =>
       ajax
         .getJSON<ServerResponse>(
-          "https://ahj-rxjs-pooling-server-liaksej.vercel.app/messages/",
+          "https://ahj-rxjs-pooling-server-liaksej.vercel.app/messages/unread",
         )
         .pipe(
           catchError((err: AjaxError) => {
@@ -39,15 +39,13 @@ function app() {
           map((response) => {
             return response.messages;
           }),
-          switchMap((messages) => {
-            return from(messages);
-          }),
+          mergeAll(),
         ),
     ),
   );
 
-  fetchUnreadMessages$.subscribe((data) => {
-    const { id, from, subject, body, received }: MessageInterface = data;
+  fetchUnreadMessages$.subscribe((data: MessageInterface) => {
+    const { id, from, subject, body, received } = data;
     const newMessage = new Message(id, from, subject, body, received);
 
     vault.push(newMessage);
