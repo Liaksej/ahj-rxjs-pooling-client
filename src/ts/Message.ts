@@ -56,20 +56,16 @@ export class Message implements MessageInterface {
       "py-5",
     );
     messageDomElement.innerHTML = `
-      <div class="flex min-w-0 gap-x-4">
-        <div class="min-w-0 flex-auto">
-          <p class="text-sm font-semibold leading-6 text-gray-900">${
+        <div class="min-w-0 w-5/12 flex-auto whitespace-nowrap overflow-ellipsis overflow-hidden">
+          <p class="items-center text-sm leading-6 text-gray-900">${
             this.from
           }</p>
         </div>
-        <div class="min-w-0 flex-auto">
-          <p class="text-sm font-semibold leading-6 text-gray-900">${
-            this.subject
-          }</p>
+        <div class="min-w-0 w-2/12 flex-auto whitespace-nowrap overflow-ellipsis overflow-hidden">
+          <p class="justify-self-center text-sm leading-6 text-gray-900">${this.getSubject()}</p>
         </div>
-      </div>
-      <div class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-        <p class="text-sm leading-6 text-gray-900">${this.dateConverter(
+        <div class="min-w-0 w-4/12 flex-auto whitespace-nowrap overflow-ellipsis overflow-hidden">
+        <p class="text-right text-sm leading-6 text-gray-900">${this.dateConverter(
           this.received,
         )}</p>
       </div>`;
