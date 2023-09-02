@@ -76,4 +76,11 @@ export class Message implements MessageInterface {
 
     list.prepend(messageDomElement);
   }
+
+  private getSubject() {
+    if (this.subject.length > 15) {
+      return this.subject.substring(0, 15) + "...";
+    }
+    return this.subject;
+  }
 }
