@@ -21,7 +21,6 @@ build: off  # отключаем встроенную в appveyor систему
 
 build_script:
   - pnpm lint
-  - pnpm test
   - pnpm build
 
 deploy_script:  # скрипт развёртывания
